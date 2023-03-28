@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "712775517224",
+    "project_id": "ars-user-3c08f",
+    "storage_bucket": "ars-user-3c08f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:712775517224:android:9383e1296dfda391b9a11d",
+        "android_client_info": {
+          "package_name": "com.example.ars"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "712775517224-4ot549hncpistl21g17tpccsd7o8b0vn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA1FpVpQbp3NQQkgSHtPK_dyps5QviIzjs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "712775517224-4ot549hncpistl21g17tpccsd7o8b0vn.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "712775517224-15et18di85lqnfgadap7v08v64vl54tk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.ars"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
