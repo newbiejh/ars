@@ -38,6 +38,7 @@ dependencies:
   firebase_core:
   firebase_auth:
   google_sign_in:
+  image_picker: 
 
 dev_dependencies:
   flutter_test:

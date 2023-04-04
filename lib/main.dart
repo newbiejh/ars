@@ -1,3 +1,4 @@
+import 'package:ars/pages/image_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ars/pages/login_page.dart';
@@ -33,7 +34,8 @@ class MyApp extends StatelessWidget {
       initialRoute: "/init",
       routes: {
         "/login": (context) => LoginPage(),
-        "/init": (context) => Init()
+        "/init": (context) => Init(),
+        "/home": (context) => ImagePage()
       },
     );
   }
