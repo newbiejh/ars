@@ -1,4 +1,4 @@
-import 'package:ars/pages/history_page.dart';
+import 'package:ars/pages/history_list_page.dart';
 import 'package:ars/pages/image_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

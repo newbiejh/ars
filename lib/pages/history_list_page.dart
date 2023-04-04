@@ -1,3 +1,5 @@
+// 아바타 저장 기록 리스트 확인 페이지
+
 import 'package:flutter/material.dart';
 
 class HistoryPage extends StatefulWidget {
