@@ -1,5 +1,7 @@
 // 메인 페이지 구성 Scaffold
 
+import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login_page.dart';
@@ -32,12 +34,23 @@ class ImagePage extends StatelessWidget {
                           height: 50,
                         ),
                         TextButton(
-                            onPressed: () async {
-                              var picker = ImagePicker();
-                              var image = await picker.pickImage(
-                                  source: ImageSource.gallery);
-                            },
-                            child: Text("아바타 이미지 불러오기"))
+                          onPressed: () async {
+                            var picker = ImagePicker();
+                            var image = await picker.pickImage(source: ImageSource.gallery);
+                            if (image != null) {
+                              String fileName = image.path.split('/').last;
+                              FormData formData = FormData.fromMap({
+                                "files": await MultipartFile.fromFile(image.path, filename: fileName),
+                              });
+                              var response = await Dio().post(
+                                "http://example.com/upload",
+                                data: formData,
+                              );
+                              print(response);
+                            }
+                          },
+                          child: Text("아바타 이미지 업로드"),
+                        )
                       ],
                     )),
                 onWillPop: () async => false);
