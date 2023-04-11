@@ -1,12 +1,10 @@
 // 메인 페이지 구성 Scaffold
 
 import 'package:dio/dio.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login_page.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 class ImagePage extends StatelessWidget {
   const ImagePage({Key? key}) : super(key: key);
@@ -46,7 +44,6 @@ class ImagePage extends StatelessWidget {
                                 "http://example.com/upload",
                                 data: formData,
                               );
-                              print(response);
                             }
                           },
                           child: Text("아바타 이미지 업로드"),
