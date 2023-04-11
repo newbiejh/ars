@@ -3,6 +3,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../components/url.dart';
 import 'login_page.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -36,14 +37,16 @@ class ImagePage extends StatelessWidget {
                             var picker = ImagePicker();
                             var image = await picker.pickImage(source: ImageSource.gallery);
                             if (image != null) {
+                              print("###########3");
                               String fileName = image.path.split('/').last;
                               FormData formData = FormData.fromMap({
                                 "files": await MultipartFile.fromFile(image.path, filename: fileName),
                               });
                               var response = await Dio().post(
-                                "http://example.com/upload",
+                                upload_url,
                                 data: formData,
                               );
+                              print("@@@@@@${response.statusCode}");
                             }
                           },
                           child: Text("아바타 이미지 업로드"),
