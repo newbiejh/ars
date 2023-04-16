@@ -12,7 +12,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   @override
   void initState() {
     super.initState();
@@ -24,19 +23,19 @@ class _LoginPageState extends State<LoginPage> {
       onWillPop: () async => false,
       child: Scaffold(
           body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ListView(
-              children: [
-                SizedBox(
-                  height: 50,
-                ),
-                SizedBox(
-                  height: 50,
-                ),
-                makeSignInButton("assets/images/google.PNG"),
-              ],
+        padding: const EdgeInsets.all(16.0),
+        child: ListView(
+          children: [
+            SizedBox(
+              height: 50,
             ),
-          )),
+            SizedBox(
+              height: 50,
+            ),
+            makeSignInButton("assets/images/google.PNG"),
+          ],
+        ),
+      )),
     );
   }
 }
@@ -66,7 +65,7 @@ TextButton makeSignInButton(String imageaddress) {
 Future<UserCredential> signInWithGoogle() async {
   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
   final GoogleSignInAuthentication googleAuth =
-  await googleUser!.authentication;
+      await googleUser!.authentication;
   final OAuthCredential credential = GoogleAuthProvider.credential(
     accessToken: googleAuth.accessToken,
     idToken: googleAuth.idToken,
