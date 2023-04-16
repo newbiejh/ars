@@ -1,5 +1,6 @@
 import 'package:ars/pages/history_list_page.dart';
 import 'package:ars/pages/image_page.dart';
+import 'package:ars/pages/item_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ars/pages/login_page.dart';
@@ -36,8 +37,9 @@ class MyApp extends StatelessWidget {
       routes: {
         "/login": (context) => LoginPage(),
         "/init": (context) => Init(),
-        "/home": (context) => ImagePage(),
-        "/history": (context) => HistoryPage()
+        "/image": (context) => ImagePage(),
+        "/history": (context) => HistoryPage(),
+        "/item": (context) => ItemPage()
       },
     );
   }
