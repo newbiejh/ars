@@ -35,12 +35,15 @@ class ImagePage extends StatelessWidget {
                         TextButton(
                           onPressed: () async {
                             var picker = ImagePicker();
-                            var image = await picker.pickImage(source: ImageSource.gallery);
+                            var image = await picker.pickImage(
+                                source: ImageSource.gallery);
                             if (image != null) {
                               print("###########3");
                               String fileName = image.path.split('/').last;
                               FormData formData = FormData.fromMap({
-                                "files": await MultipartFile.fromFile(image.path, filename: fileName),
+                                "files": await MultipartFile.fromFile(
+                                    image.path,
+                                    filename: fileName),
                               });
                               var response = await Dio().post(
                                 upload_url,
@@ -50,10 +53,18 @@ class ImagePage extends StatelessWidget {
                             }
                           },
                           child: Text("아바타 이미지 업로드"),
-                        )
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/item');
+                            },
+                            child: Text("아이템 출력 페이지 테스트용"))
                       ],
                     )),
-                onWillPop: () async => false);
+                onWillPop: () async => false); // TODO: 뒤로가기 버튼 누를 시 종료 다이얼로그 출력
           } else
             return LoginPage();
         });
@@ -146,39 +157,35 @@ class ImagePage extends StatelessWidget {
       BuildContext context, AsyncSnapshot<User?> snapshot) {
     return showDialog(
         context: context,
-        //barrierDismissible - Dialog를 제외한 다른 화면 터치 x
-        barrierDismissible: false,
+        barrierDismissible: true,
         builder: (BuildContext context) {
-          return WillPopScope(
-            onWillPop: () async => false,
-            child: AlertDialog(
-              // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)),
-              //Dialog Main Title
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("이름: ${snapshot.data!.displayName}"),
-                  Text(
-                    '이메일: ${snapshot.data!.email}',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                ],
-              ),
-              //
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text("닫기"),
-                  ),
-                ],
-              ),
+          return AlertDialog(
+            // RoundedRectangleBorder - Dialog 화면 모서리 둥글게 조절
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
+            //Dialog Main Title
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("이름: ${snapshot.data!.displayName}"),
+                Text(
+                  '이메일: ${snapshot.data!.email}',
+                  style: TextStyle(fontSize: 15),
+                ),
+              ],
+            ),
+            //
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("닫기"),
+                ),
+              ],
             ),
           );
         });
