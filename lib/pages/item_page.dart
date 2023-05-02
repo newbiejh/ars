@@ -99,15 +99,40 @@ class _ItemPageState extends State<ItemPage> {
                       return Padding(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         child: Container(
-                          height: 40,
-                          width: double.infinity,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Text('${data[index]['email']}'),
-                        ),
+                            height: 40,
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Container(
+                              height: 40,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      child: Image.network(
+                                        itemtest_url,
+                                        width: 28,
+                                        height: 28,
+                                      ),
+                                    ),
+                                  ),
+                                  Text('${data[index]['email']}'),
+                                  SizedBox(
+                                    width: 50,
+                                  ),
+                                  Text('가격 : ${data[index]['id'].toString()}')
+                                ],
+                              ),
+                            )),
                       );
                     },
                   ),
@@ -125,7 +150,7 @@ class _ItemPageState extends State<ItemPage> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text('진행 중...'),
+            Text('생성 중입니다...'),
           ],
         ),
       ),
