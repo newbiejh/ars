@@ -1,3 +1,4 @@
+import 'package:ars/pages/history_check_page.dart';
 import 'package:ars/pages/history_list_page.dart';
 import 'package:ars/pages/image_page.dart';
 import 'package:ars/pages/item_page.dart';
@@ -39,7 +40,8 @@ class MyApp extends StatelessWidget {
         "/init": (context) => Init(),
         "/image": (context) => ImagePage(),
         "/history": (context) => HistoryPage(),
-        "/item": (context) => ItemPage()
+        "/item": (context) => ItemPage(),
+        "/check": (context) => HistoryCheckPage(),
       },
     );
   }
