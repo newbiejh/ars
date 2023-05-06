@@ -17,10 +17,10 @@ class _ItemPageState extends State<ItemPage> {
   @override
   void initState() {
     super.initState();
-    fetchAccident();
+    fetchItem();
   }
 
-  Future fetchAccident() async {
+  Future fetchItem() async {
     final response = await http
         .get(Uri.parse('https://jsonplaceholder.typicode.com/comments'));
 
@@ -29,7 +29,7 @@ class _ItemPageState extends State<ItemPage> {
       String responseBody = utf8.decode(response.bodyBytes);
       list = jsonDecode(responseBody);
     } else {
-      throw Exception('Failed to load Accident');
+      throw Exception('Failed to load Item');
     }
     if (this.mounted) {
       setState(() {
