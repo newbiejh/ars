@@ -22,17 +22,11 @@ class _LoginPageState extends State<LoginPage> {
     return WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-          body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
+          body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-              height: 50,
-            ),
-            SizedBox(
-              height: 50,
-            ),
-            makeSignInButton("assets/images/google.PNG"),
+            makeGoogleSignInButton("assets/images/google.PNG"),
           ],
         ),
       )),
@@ -41,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 // 로그인 버튼 생성
-TextButton makeSignInButton(String imageaddress) {
+TextButton makeGoogleSignInButton(String imageaddress) {
   return TextButton(
     onPressed: () {
       if (imageaddress == "assets/images/google.PNG") {
@@ -50,8 +44,6 @@ TextButton makeSignInButton(String imageaddress) {
     },
     child: Image.asset(
       imageaddress,
-      height: 50,
-      width: 50,
     ),
     style: TextButton.styleFrom(
         backgroundColor: Colors.transparent,
