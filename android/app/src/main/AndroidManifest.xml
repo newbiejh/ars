@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.ars">
    <application
-        android:label="ars"
+        android:label="D&amp;F Avatar Recommend System"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
