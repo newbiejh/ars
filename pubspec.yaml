@@ -70,7 +70,6 @@ flutter:
   #   - images/a_dot_ham.jpeg
   assets:
     - assets/images/google.PNG
-    - assets/images/kakao.PNG
     - assets/images/error.PNG
 
   # An image asset can refer to one or more resolution-specific "variants", see
