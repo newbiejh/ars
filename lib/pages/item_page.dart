@@ -100,19 +100,19 @@ class _ItemPageState extends State<ItemPage> {
                     itemCount: testData.length,
                     // 아이템 총 개수는 10개, 무기 제외하면 9개
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
+                      return Expanded(
                         child: Container(
-                            height: 40,
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: _showItemInfoBox(
-                                '${testData[index]['icon']}',
-                                '${testData[index]['name']}',
-                                '500')),
+                          margin: EdgeInsets.only(bottom: 16),
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: _showItemInfoBox(
+                              '${testData[index]['icon']}',
+                              '${testData[index]['name']}',
+                              '${testData[index]['price']}'),
+                        ),
                       );
                     },
                   ),
@@ -193,11 +193,16 @@ SingleChildScrollView _showItemInfoBox(
             ),
           ),
         ),
-        Text(itemname),
-        SizedBox(
-          width: 50,
-        ),
-        Text('가격 : ${price}')
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(itemname),
+            SizedBox(
+              height: 5,
+            ),
+            Text('가격 : ${price}'),
+          ],
+        )
       ],
     ),
   );
