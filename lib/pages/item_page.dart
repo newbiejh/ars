@@ -73,20 +73,23 @@ class _ItemPageState extends State<ItemPage> {
                         height: 200,
                         fit: BoxFit.cover,
                       ),
-                      Container(
-                        child: Image.network(
-                          itemtest_url,
-                          width: 28,
-                          height: 28,
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: List.generate(3, (rowIndex) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: List.generate(3, (colIndex) {
+                                int index = rowIndex * 3 + colIndex;
+                                return _showItemSmallIcon(
+                                    '${testData[index]['icon']}',
+                                    '${testData[index]['part']}');
+                              }),
+                            );
+                          }),
                         ),
                       ),
-                      Container(
-                        child: Image.network(
-                          itemtest_url,
-                          width: 28,
-                          height: 28,
-                        ),
-                      ),
+                      //_showItemSmallIcon('${testData[9]['icon']}', '${testData[9]['part']}') 무기 아이콘
                     ],
                   ),
                   ListView.builder(
@@ -94,45 +97,22 @@ class _ItemPageState extends State<ItemPage> {
                     physics: ClampingScrollPhysics(),
                     scrollDirection: Axis.vertical,
                     // 스크롤 방향을 세로로 지정
-                    itemCount: data.length,
+                    itemCount: testData.length,
+                    // 아이템 총 개수는 10개, 무기 제외하면 9개
                     itemBuilder: (context, index) {
                       return Padding(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         child: Container(
                             height: 40,
-                            width: double.infinity,
-                            alignment: Alignment.center,
+                            width: MediaQuery.of(context).size.width,
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.grey),
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            child: Container(
-                              height: 40,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Container(
-                                      child: Image.network(
-                                        itemtest_url,
-                                        width: 28,
-                                        height: 28,
-                                      ),
-                                    ),
-                                  ),
-                                  Text('${data[index]['email']}'),
-                                  SizedBox(
-                                    width: 50,
-                                  ),
-                                  Text('가격 : ${data[index]['id'].toString()}')
-                                ],
-                              ),
-                            )),
+                            child: _showItemInfoBox(
+                                '${testData[index]['icon']}',
+                                '${testData[index]['name']}',
+                                '500')),
                       );
                     },
                   ),
@@ -185,5 +165,60 @@ Future<dynamic> _showBackDialog(BuildContext context) {
         ],
       );
     },
+  );
+}
+
+SingleChildScrollView _showItemInfoBox(
+    String itemicon, String itemname, String price) {
+  return SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            child: Image.network(
+              "${item_icon_url}${itemicon}",
+              width: 28,
+              height: 28,
+              errorBuilder: (BuildContext context, Object exception,
+                  StackTrace? stackTrace) {
+                // 이미지 로딩 중 에러가 발생하면 error.png 이미지 반환
+                return Image.asset(
+                  'assets/images/error.PNG',
+                  width: 28,
+                  height: 28,
+                );
+              },
+            ),
+          ),
+        ),
+        Text(itemname),
+        SizedBox(
+          width: 50,
+        ),
+        Text('가격 : ${price}')
+      ],
+    ),
+  );
+}
+
+Column _showItemSmallIcon(String icon, String part) {
+  return Column(
+    children: [
+      Container(
+          child: Image.network(
+            '${item_icon_url}${icon}',
+            width: 28,
+            height: 28,
+          )),
+      Text(
+        '${part}',
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      )
+    ],
   );
 }
