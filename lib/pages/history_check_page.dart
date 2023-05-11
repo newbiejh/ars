@@ -222,3 +222,5 @@ Column _showItemSmallIcon(String icon, String part) {
     ],
   );
 }
+
+// TODO: 저장 기록 상세 GET

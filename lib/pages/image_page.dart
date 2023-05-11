@@ -38,7 +38,7 @@ class ImagePage extends StatelessWidget {
                             var image = await picker.pickImage(
                                 source: ImageSource.gallery);
                             if (image != null) {
-                              print("###########3");
+                              print("###########3"); // TODO: 마지막에 제거
                               String fileName = image.path.split('/').last;
                               FormData formData = FormData.fromMap({
                                 "files": await MultipartFile.fromFile(
@@ -49,7 +49,7 @@ class ImagePage extends StatelessWidget {
                                 upload_url,
                                 data: formData,
                               );
-                              print("@@@@@@${response.statusCode}");
+                              print("@@@@@@${response.statusCode}"); // TODO: 마지막에 제거
                             }
                           },
                           child: Text("아바타 이미지 업로드"),
