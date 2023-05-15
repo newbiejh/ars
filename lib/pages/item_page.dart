@@ -64,7 +64,8 @@ class _ItemPageState extends State<ItemPage> {
             ),
             body: SingleChildScrollView(
               child: Column(
-                children: [ // TODO: 저장 버튼 및 기능 추가
+                children: [
+                  // TODO: 저장 버튼 및 기능 추가
                   Row(
                     children: [
                       Image.network(
@@ -76,14 +77,15 @@ class _ItemPageState extends State<ItemPage> {
                       Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: List.generate(3, (rowIndex) {
+                          children: List.generate(2, (rowIndex) {
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: List.generate(3, (colIndex) {
-                                int index = rowIndex * 3 + colIndex;
+                              children: List.generate(4, (colIndex) {
+                                int index = rowIndex * 4 + colIndex;
                                 return _showItemSmallIcon(
-                                    '${testData[index]['icon']}',
-                                    '${testData[index]['part']}');
+                                  '${testData[index]['icon']}',
+                                  '${testData[index]['part']}',
+                                );
                               }),
                             );
                           }),
@@ -111,7 +113,8 @@ class _ItemPageState extends State<ItemPage> {
                           child: _showItemInfoBox(
                               '${testData[index]['icon']}',
                               '${testData[index]['name']}',
-                              '${testData[index]['price']}'),
+                              //'${testData[index]['price']}'
+                          ),
                         ),
                       );
                     },
@@ -169,7 +172,7 @@ Future<dynamic> _showBackDialog(BuildContext context) {
 }
 
 SingleChildScrollView _showItemInfoBox(
-    String itemicon, String itemname, String price) {
+    String itemicon, String itemname, /*String price*/) {
   return SingleChildScrollView(
     scrollDirection: Axis.horizontal,
     child: Row(
@@ -200,7 +203,7 @@ SingleChildScrollView _showItemInfoBox(
             SizedBox(
               height: 5,
             ),
-            Text('가격 : ${price}'),
+            //Text('가격 : ${price}'),
           ],
         )
       ],
@@ -213,10 +216,10 @@ Column _showItemSmallIcon(String icon, String part) {
     children: [
       Container(
           child: Image.network(
-            '${item_icon_url}${icon}',
-            width: 28,
-            height: 28,
-          )),
+        '${item_icon_url}${icon}',
+        width: 28,
+        height: 28,
+      )),
       Text(
         '${part}',
         style: TextStyle(
