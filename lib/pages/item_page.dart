@@ -50,15 +50,25 @@ class _ItemPageState extends State<ItemPage> {
           child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
-                  onPressed: () {
-                    _showBackDialog(context);
-                  },
-                  icon: Icon(Icons.arrow_back),
-                  color: Colors.black),
+                onPressed: () {
+                  _showBackDialog(context);
+                },
+                icon: Icon(Icons.arrow_back),
+                color: Colors.black,
+              ),
               title: Text(
                 '아바타 생성 결과 조회',
                 style: TextStyle(color: Colors.black),
               ),
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    _showSaveDialog(context);
+                  },
+                  icon: Icon(Icons.save),
+                  color: Colors.black,
+                ),
+              ],
               backgroundColor: Colors.yellow,
               foregroundColor: Colors.black,
             ),
@@ -69,7 +79,7 @@ class _ItemPageState extends State<ItemPage> {
                   Row(
                     children: [
                       Image.network(
-                        showroomtest_url,
+                        showroom_url,
                         width: 200,
                         height: 200,
                         fit: BoxFit.cover,
@@ -111,9 +121,9 @@ class _ItemPageState extends State<ItemPage> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: _showItemInfoBox(
-                              '${testData[index]['icon']}',
-                              '${testData[index]['name']}',
-                              //'${testData[index]['price']}'
+                            '${testData[index]['icon']}',
+                            '${testData[index]['name']}',
+                            //'${testData[index]['price']}'
                           ),
                         ),
                       );
@@ -171,8 +181,42 @@ Future<dynamic> _showBackDialog(BuildContext context) {
   );
 }
 
+Future<dynamic> _showSaveDialog(BuildContext context) {
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(
+          '아바타 저장',
+          textAlign: TextAlign.center,
+        ),
+        content: Text(
+          '현재 아바타를 저장하시겠습니까?',
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {},
+            child: Text('예'),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          TextButton(
+            onPressed: () {},
+            child: Text('아니오'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 SingleChildScrollView _showItemInfoBox(
-    String itemicon, String itemname, /*String price*/) {
+  String itemicon,
+  String itemname,
+  /*String price*/
+) {
   return SingleChildScrollView(
     scrollDirection: Axis.horizontal,
     child: Row(
