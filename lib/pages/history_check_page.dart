@@ -68,7 +68,7 @@ class _HistoryCheckPageState extends State<HistoryCheckPage> {
                   Row(
                     children: [
                       Image.network(
-                        showroomtest_url,
+                        showroom_url,
                         width: 200,
                         height: 200,
                         fit: BoxFit.cover,
