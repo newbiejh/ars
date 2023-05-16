@@ -203,7 +203,7 @@ Future<dynamic> _showSaveDialog(BuildContext context) {
             height: 10,
           ),
           TextButton(
-            onPressed: () {},
+            onPressed: () => Navigator.pop(context),
             child: Text('아니오'),
           ),
         ],
