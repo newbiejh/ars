@@ -66,7 +66,7 @@ class _ItemPageState extends State<ItemPage> {
               actions: [
                 IconButton(
                   onPressed: () {
-                    _showSaveDialog(context);
+                    _showSaveDialog(data, context);
                   },
                   icon: Icon(Icons.save),
                   color: Colors.black,
@@ -95,8 +95,8 @@ class _ItemPageState extends State<ItemPage> {
                               children: List.generate(4, (colIndex) {
                                 int index = rowIndex * 4 + colIndex;
                                 return _showItemSmallIcon(
-                                  '${data[index]['icon']}',
-                                  '${data[index]['part']}',
+                                  '${testData[index]['icon']}',
+                                  '${testData[index]['part']}',
                                 );
                               }),
                             );
@@ -111,7 +111,7 @@ class _ItemPageState extends State<ItemPage> {
                     physics: ClampingScrollPhysics(),
                     scrollDirection: Axis.vertical,
                     // 스크롤 방향을 세로로 지정
-                    itemCount: data.length,
+                    itemCount: testData.length,
                     // 아이템 총 개수는 10개, 무기 제외하면 9개
                     itemBuilder: (context, index) {
                       return Expanded(
@@ -123,8 +123,8 @@ class _ItemPageState extends State<ItemPage> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: _showItemInfoBox(
-                            '${data[index]['icon']}',
-                            '${data[index]['name']}',
+                            '${testData[index]['icon']}',
+                            '${testData[index]['name']}',
                             //'${testData[index]['price']}'
                           ),
                         ),
@@ -183,7 +183,7 @@ Future<dynamic> _showBackDialog(BuildContext context) {
   );
 }
 
-Future<dynamic> _showSaveDialog(BuildContext context) {
+Future<dynamic> _showSaveDialog(var data, BuildContext context) {
   return showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -198,7 +198,9 @@ Future<dynamic> _showSaveDialog(BuildContext context) {
         ),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              _saveAvatarToServer(data, context);
+            },
             child: Text('예'),
           ),
           SizedBox(
@@ -212,6 +214,64 @@ Future<dynamic> _showSaveDialog(BuildContext context) {
       );
     },
   );
+}
+
+Future<void> _saveAvatarToServer(var data, BuildContext context) async {
+  try {
+    final url = Uri.parse(avatar_save_url);
+
+    // POST 요청을 보냅니다.
+    final response = await http.post(
+      url,
+      body: data,
+    );
+
+    // 저장이 완료되었을 때 알림을 표시합니다.
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            '저장 완료',
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            '아바타가 성공적으로 저장되었습니다.',
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  } catch (error) {
+    // 저장 실패 시 오류 메시지를 표시합니다.
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            '저장 실패',
+            textAlign: TextAlign.center,
+          ),
+          content: Text(
+            '아바타 저장 중 오류가 발생했습니다.',
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 SingleChildScrollView _showItemInfoBox(
