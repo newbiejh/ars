@@ -4,6 +4,9 @@ import 'package:ars/components/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+// TODO: 저장 버튼 및 기능 추가
+// TODO: 가격 api 연결
+
 class ItemPage extends StatefulWidget {
   const ItemPage({Key? key}) : super(key: key);
 
@@ -75,7 +78,6 @@ class _ItemPageState extends State<ItemPage> {
             body: SingleChildScrollView(
               child: Column(
                 children: [
-                  // TODO: 저장 버튼 및 기능 추가
                   Row(
                     children: [
                       Image.network(
@@ -93,8 +95,8 @@ class _ItemPageState extends State<ItemPage> {
                               children: List.generate(4, (colIndex) {
                                 int index = rowIndex * 4 + colIndex;
                                 return _showItemSmallIcon(
-                                  '${testData[index]['icon']}',
-                                  '${testData[index]['part']}',
+                                  '${data[index]['icon']}',
+                                  '${data[index]['part']}',
                                 );
                               }),
                             );
@@ -109,7 +111,7 @@ class _ItemPageState extends State<ItemPage> {
                     physics: ClampingScrollPhysics(),
                     scrollDirection: Axis.vertical,
                     // 스크롤 방향을 세로로 지정
-                    itemCount: testData.length,
+                    itemCount: data.length,
                     // 아이템 총 개수는 10개, 무기 제외하면 9개
                     itemBuilder: (context, index) {
                       return Expanded(
@@ -121,8 +123,8 @@ class _ItemPageState extends State<ItemPage> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: _showItemInfoBox(
-                            '${testData[index]['icon']}',
-                            '${testData[index]['name']}',
+                            '${data[index]['icon']}',
+                            '${data[index]['name']}',
                             //'${testData[index]['price']}'
                           ),
                         ),
