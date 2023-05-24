@@ -2,6 +2,8 @@
 
 // 서버 url
 String upload_url = "https://05cf-112-217-167-202.ngrok-free.app/upload";
+String history_check_url = "";
+String avatar_save_url = "";
 
 // 아바타 url
 String showroom_url =
