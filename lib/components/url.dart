@@ -2,12 +2,13 @@
 
 // 서버 url
 String upload_url = "https://05cf-112-217-167-202.ngrok-free.app/upload";
+String avatar_info_get_url = "https://115a-112-217-167-202.ngrok-free.app/jsonget?job=priest&gender=m_";
 String history_check_url = "";
 String avatar_save_url = "";
 
 // 아바타 url
 String showroom_url =
-    "https://avatarsync.df.nexon.com/wear/image/stand@2x.png?wearInfo=%7B%22job%22:%224%22,%22level%22:0,%22hair%22:%7B%22index%22:%22h24w7i%22,%20%22color%22:0%7D,%22cap%22:%7B%22index%22:%22ygww7i%22,%20%22color%22:0%7D,%22face%22:%7B%22index%22:%223rjv7i%22,%20%22color%22:0%7D,%22neck%22:%7B%22index%22:%22fn2r7i%22,%20%22color%22:0%7D,%22coat%22:%7B%22index%22:%22i5ai%22,%20%22color%22:0%7D,%22belt%22:%7B%22index%22:%22kcmi%22,%20%22color%22:0%7D,%22pants%22:%7B%22index%22:%2292ai%22,%20%22color%22:0%7D,%22shoes%22:%7B%22index%22:%22x5mi%22,%20%22color%22:0%7D,%22skin%22:null,%22weapon1%22:null,%22package%22:null,%22animation%22:%22Stand%22%7D";
+    "https://avatarsync.df.nexon.com/wear/image/stand@2x.png?wearInfo=%7B%22job%22:%224%22,%22level%22:0,%22hair%22:null,%22cap%22:null,%22face%22:null,%22neck%22:null,%22coat%22:null,%22belt%22:null,%22pants%22:null,%22shoes%22:null,%22skin%22:null,%22weapon1%22:null,%22package%22:null,%22animation%22:%22Stand%22%7D";
 
 // 부위별 아이템 아이콘 url
 String item_icon_url =

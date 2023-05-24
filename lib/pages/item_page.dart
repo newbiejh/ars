@@ -15,7 +15,7 @@ class ItemPage extends StatefulWidget {
 }
 
 class _ItemPageState extends State<ItemPage> {
-  var data = [];
+  var itemList = [];
 
   @override
   void initState() {
@@ -24,8 +24,7 @@ class _ItemPageState extends State<ItemPage> {
   }
 
   Future fetchItem() async {
-    final response = await http
-        .get(Uri.parse('https://jsonplaceholder.typicode.com/comments'));
+    final response = await http.get(Uri.parse(avatar_info_get_url));
 
     var list = [];
     if (response.statusCode == 200) {
@@ -36,14 +35,15 @@ class _ItemPageState extends State<ItemPage> {
     }
     if (this.mounted) {
       setState(() {
-        data = list;
+        itemList = list;
+        _updateShowroomURL(itemList);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (data.isNotEmpty) {
+    if (itemList.isNotEmpty) {
       // data 배열 비어있을 때 빨간 오류창 방지하기 위해 if문 삽입
       return Scrollbar(
         thickness: 4.0,
@@ -66,7 +66,7 @@ class _ItemPageState extends State<ItemPage> {
               actions: [
                 IconButton(
                   onPressed: () {
-                    _showSaveDialog(data, context);
+                    _showSaveDialog(itemList, context);
                   },
                   icon: Icon(Icons.save),
                   color: Colors.black,
@@ -95,8 +95,8 @@ class _ItemPageState extends State<ItemPage> {
                               children: List.generate(4, (colIndex) {
                                 int index = rowIndex * 4 + colIndex;
                                 return _showItemSmallIcon(
-                                  '${testData[index]['icon']}',
-                                  '${testData[index]['part']}',
+                                  '${itemList[index]['icon']}',
+                                  '${itemList[index]['part']}',
                                 );
                               }),
                             );
@@ -111,7 +111,7 @@ class _ItemPageState extends State<ItemPage> {
                     physics: ClampingScrollPhysics(),
                     scrollDirection: Axis.vertical,
                     // 스크롤 방향을 세로로 지정
-                    itemCount: testData.length,
+                    itemCount: itemList.length,
                     // 아이템 총 개수는 10개, 무기 제외하면 9개
                     itemBuilder: (context, index) {
                       return Expanded(
@@ -123,8 +123,8 @@ class _ItemPageState extends State<ItemPage> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: _showItemInfoBox(
-                            '${testData[index]['icon']}',
-                            '${testData[index]['name']}',
+                            '${itemList[index]['icon']}',
+                            '${itemList[index]['name']}',
                             //'${testData[index]['price']}'
                           ),
                         ),
@@ -338,4 +338,28 @@ Column _showItemSmallIcon(String icon, String part) {
       )
     ],
   );
+}
+
+void _updateShowroomURL(var itemList) {
+  Map<String, String> partMap = {
+    '머리': '%22hair%22',
+    '모자': '%22cap%22',
+    '얼굴': '%22face%22',
+    '목가슴': '%22neck%22',
+    '상의': '%22coat%22',
+    '허리': '%22belt%22',
+    '하의': '%22pants%22',
+    '신발': '%22shoes%22',
+  };
+
+  for (int index = 0; index < itemList.length; index++) {
+    String part = itemList[index]['part'];
+    String? key = partMap[part];
+
+    if (key != null) {
+      String replaceValue =
+          '%7B%22index%22:%22${itemList[index]['index']}%22,%20%22color%22:0%7D';
+      showroom_url = showroom_url.replaceAll('$key:null', '$key:$replaceValue');
+    }
+  }
 }
