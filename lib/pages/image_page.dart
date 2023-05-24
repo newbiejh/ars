@@ -59,7 +59,7 @@ class ImagePage extends StatelessWidget {
                         ),
                         TextButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, '/item');
+                              Navigator.pushNamed(context, '/item', arguments: snapshot!.data?.email);
                             },
                             child: Text("아이템 출력 페이지 테스트용"))
                       ],

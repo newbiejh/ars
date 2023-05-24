@@ -15,34 +15,51 @@ class ItemPage extends StatefulWidget {
 }
 
 class _ItemPageState extends State<ItemPage> {
+  TextEditingController _titleController = TextEditingController();
   var itemList = [];
 
   @override
   void initState() {
     super.initState();
-    fetchItem();
+    fetchItemWithRetry();
   }
 
-  Future fetchItem() async {
-    final response = await http.get(Uri.parse(avatar_info_get_url));
+  Future<void> fetchItemWithRetry() async {
+    const maxRetryCount = 5;
+    const retryDelay = Duration(seconds: 5);
+    var retryCount = 0;
+    var isStatusCode200 = false;
 
-    var list = [];
-    if (response.statusCode == 200) {
-      String responseBody = utf8.decode(response.bodyBytes);
-      list = jsonDecode(responseBody);
-    } else {
-      throw Exception('Failed to load Item');
+    while (retryCount < maxRetryCount && !isStatusCode200) {
+      final response = await http.get(Uri.parse(avatar_info_get_url));
+      print(response.statusCode);
+
+      if (response.statusCode == 200) {
+        isStatusCode200 = true;
+        String responseBody = utf8.decode(response.bodyBytes);
+        var list = jsonDecode(responseBody);
+
+        if (mounted) {
+          setState(() {
+            itemList = list;
+            _updateShowroomURL(itemList);
+          });
+        }
+      }
+
+      retryCount++;
+      await Future.delayed(retryDelay);
     }
-    if (this.mounted) {
-      setState(() {
-        itemList = list;
-        _updateShowroomURL(itemList);
-      });
+
+    if (!isStatusCode200) {
+      throw Exception('Failed to load Item');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final email = ModalRoute.of(context)!.settings.arguments.toString();
+
     if (itemList.isNotEmpty) {
       // data 배열 비어있을 때 빨간 오류창 방지하기 위해 if문 삽입
       return Scrollbar(
@@ -66,7 +83,7 @@ class _ItemPageState extends State<ItemPage> {
               actions: [
                 IconButton(
                   onPressed: () {
-                    _showSaveDialog(itemList, context);
+                    _showSaveDialog(itemList, context, _titleController, email);
                   },
                   icon: Icon(Icons.save),
                   color: Colors.black,
@@ -183,18 +200,34 @@ Future<dynamic> _showBackDialog(BuildContext context) {
   );
 }
 
-Future<dynamic> _showSaveDialog(var data, BuildContext context) {
+Future<dynamic> _showSaveDialog(var data, BuildContext context,
+    TextEditingController titleController, String email) {
   return showDialog(
     context: context,
-    builder: (BuildContext context) {
+    builder: (
+      BuildContext context,
+    ) {
       return AlertDialog(
         title: Text(
           '아바타 저장',
           textAlign: TextAlign.center,
         ),
-        content: Text(
-          '현재 아바타를 저장하시겠습니까?',
-          textAlign: TextAlign.center,
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '현재 아바타를 저장하시겠습니까?',
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: titleController,
+              decoration: InputDecoration(
+                hintText: '저장할 아바타 이름',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
         ),
         actions: [
           Column(
@@ -202,7 +235,8 @@ Future<dynamic> _showSaveDialog(var data, BuildContext context) {
             children: [
               TextButton(
                 onPressed: () {
-                  _saveAvatarToServer(data, context);
+                  String title = titleController.text;
+                  _saveAvatarToServer(data, context, title, email);
                 },
                 child: Text('예'),
               ),
@@ -219,40 +253,53 @@ Future<dynamic> _showSaveDialog(var data, BuildContext context) {
   );
 }
 
-Future<void> _saveAvatarToServer(var data, BuildContext context) async {
+Future<void> _saveAvatarToServer(
+    var data, BuildContext context, String title, String email) async {
   try {
     final url = Uri.parse(avatar_save_url);
 
     // POST 요청을 보냅니다.
+    Map<String, dynamic> requestBody = {
+      //'data': data,
+      'title': title.toString(),
+      'email': email.toString(),
+    };
+
+    print(requestBody);
+
     final response = await http.post(
       url,
-      body: data,
+      body: jsonEncode(requestBody),
+      headers: {'Content-Type': 'application/json'},
     );
-
-    // 저장이 완료되었을 때 알림을 표시합니다.
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            '저장 완료',
-            textAlign: TextAlign.center,
-          ),
-          content: Text(
-            '아바타가 성공적으로 저장되었습니다.',
-            textAlign: TextAlign.center,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('확인'),
+    print("!!!!!!!!!!!${response.statusCode}");
+    if (response.statusCode~/100 == 2) {
+      // 저장이 완료되었을 때 알림을 표시합니다.
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              '저장 완료',
+              textAlign: TextAlign.center,
             ),
-          ],
-        );
-      },
-    );
+            content: Text(
+              '아바타가 성공적으로 저장되었습니다.',
+              textAlign: TextAlign.center,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   } catch (error) {
     // 저장 실패 시 오류 메시지를 표시합니다.
+    print("에러#############");
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -278,7 +325,10 @@ Future<void> _saveAvatarToServer(var data, BuildContext context) async {
 }
 
 SingleChildScrollView _showItemInfoBox(
-    String itemicon, String itemname, /*String price*/) {
+  String itemicon,
+  String itemname,
+  /*String price*/
+) {
   return SingleChildScrollView(
     scrollDirection: Axis.horizontal,
     child: Row(
