@@ -125,7 +125,7 @@ class _ItemPageState extends State<ItemPage> {
                           child: _showItemInfoBox(
                             '${itemList[index]['icon']}',
                             '${itemList[index]['name']}',
-                            //'${testData[index]['price']}'
+                            //'${item_price[index]}',
                           ),
                         ),
                       );
@@ -278,10 +278,7 @@ Future<void> _saveAvatarToServer(var data, BuildContext context) async {
 }
 
 SingleChildScrollView _showItemInfoBox(
-  String itemicon,
-  String itemname,
-  /*String price*/
-) {
+    String itemicon, String itemname, /*String price*/) {
   return SingleChildScrollView(
     scrollDirection: Axis.horizontal,
     child: Row(
