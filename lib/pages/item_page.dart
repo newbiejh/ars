@@ -197,18 +197,21 @@ Future<dynamic> _showSaveDialog(var data, BuildContext context) {
           textAlign: TextAlign.center,
         ),
         actions: [
-          TextButton(
-            onPressed: () {
-              _saveAvatarToServer(data, context);
-            },
-            child: Text('예'),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('아니오'),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: () {
+                  _saveAvatarToServer(data, context);
+                },
+                child: Text('예'),
+              ),
+              SizedBox(height: 10),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('아니오'),
+              ),
+            ],
           ),
         ],
       );
