@@ -3,6 +3,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import '../components/url.dart';
 import 'login_page.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,67 +13,101 @@ class ImagePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
-          if (snapshot.data != null) {
-            return WillPopScope(
-                child: Scaffold(
-                    appBar: AppBar(
-                      iconTheme: IconThemeData(
-                        color: Colors.black,
+    return WillPopScope(
+      onWillPop: () async {
+        return await showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              title: Text('앱 종료'),
+              content: Text("앱을 종료하시겠습니까?"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                    SystemNavigator.pop();
+                  },
+                  child: Text("예"),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: Text("아니오"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      child: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+            if (snapshot.data != null) {
+              return WillPopScope(
+                  child: Scaffold(
+                      appBar: AppBar(
+                        iconTheme: IconThemeData(
+                          color: Colors.black,
+                        ),
+                        backgroundColor: Colors.transparent,
+                        elevation: 0.0,
                       ),
-                      backgroundColor: Colors.transparent,
-                      elevation: 0.0,
-                    ),
-                    // 사이드 메뉴
-                    drawer: _showDrawer(context, snapshot),
-                    body: ListView(
-                      children: [
-                        SizedBox(
-                          height: 50,
-                        ),
-                        TextButton(
-                          onPressed: () async {
-                            var picker = ImagePicker();
-                            var image = await picker.pickImage(
-                                source: ImageSource.gallery);
-                            if (image != null) {
-                              String fileName = image.path.split('/').last;
-                              FormData formData = FormData.fromMap({
-                                "files": await MultipartFile.fromFile(
-                                  image.path,
-                                  filename: fileName,
-                                ),
-                                "userid": snapshot.data!.email,
-                              });
-                              var response =
-                                  await Dio().post(upload_url, data: formData);
+                      // 사이드 메뉴
+                      drawer: _showDrawer(context, snapshot),
+                      body: ListView(
+                        children: [
+                          SizedBox(
+                            height: 50,
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              var picker = ImagePicker();
+                              var image = await picker.pickImage(
+                                  source: ImageSource.gallery);
+                              if (image != null) {
+                                String fileName = image.path.split('/').last;
+                                FormData formData = FormData.fromMap({
+                                  "files": await MultipartFile.fromFile(
+                                    image.path,
+                                    filename: fileName,
+                                  ),
+                                  "userid": snapshot.data!.email,
+                                });
+                                var response = await Dio()
+                                    .post(upload_url, data: formData);
 
-                              if (response.statusCode! >= 200 &&
-                                  response.statusCode! < 300) {
-                                Navigator.pushNamed(context, '/item',
-                                    arguments: snapshot.data?.email);
+                                if (response.statusCode! >= 200 &&
+                                    response.statusCode! < 300) {
+                                  Navigator.pushNamed(context, '/item',
+                                      arguments: snapshot.data?.email);
+                                }
                               }
-                            }
-                          },
-                          child: Text("아바타 이미지 업로드"),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/item',
-                                  arguments: snapshot!.data?.email);
                             },
-                            child: Text("아이템 출력 페이지 테스트용"))
-                      ],
-                    )),
-                onWillPop: () async => false); // TODO: 뒤로가기 버튼 누를 시 종료 다이얼로그 출력
-          } else
-            return LoginPage();
-        });
+                            child: Text("아바타 이미지 업로드"),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/item',
+                                    arguments: snapshot!.data?.email);
+                              },
+                              child: Text("아이템 출력 페이지 테스트용"))
+                        ],
+                      )),
+                  onWillPop: () async =>
+                      false); // TODO: 뒤로가기 버튼 누를 시 종료 다이얼로그 출력
+            } else
+              return LoginPage();
+          }),
+    );
   }
 
   // 사이드 메뉴 출력 함수
