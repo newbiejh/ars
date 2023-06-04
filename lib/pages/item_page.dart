@@ -58,7 +58,11 @@ class _ItemPageState extends State<ItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    final email = ModalRoute.of(context)!.settings.arguments.toString();
+    final email = ModalRoute
+        .of(context)!
+        .settings
+        .arguments
+        .toString();
 
     if (itemList.isNotEmpty) {
       // data 배열 비어있을 때 빨간 오류창 방지하기 위해 if문 삽입
@@ -134,7 +138,10 @@ class _ItemPageState extends State<ItemPage> {
                       return Expanded(
                         child: Container(
                           margin: EdgeInsets.only(bottom: 16),
-                          width: MediaQuery.of(context).size.width,
+                          width: MediaQuery
+                              .of(context)
+                              .size
+                              .width,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
@@ -204,9 +211,7 @@ Future<dynamic> _showSaveDialog(var data, BuildContext context,
     TextEditingController titleController, String email) {
   return showDialog(
     context: context,
-    builder: (
-      BuildContext context,
-    ) {
+    builder: (BuildContext context,) {
       return AlertDialog(
         title: Text(
           '아바타 저장',
@@ -253,8 +258,8 @@ Future<dynamic> _showSaveDialog(var data, BuildContext context,
   );
 }
 
-Future<void> _saveAvatarToServer(
-    var data, BuildContext context, String title, String email) async {
+Future<void> _saveAvatarToServer(var data, BuildContext context, String title,
+    String email) async {
   try {
     final url = Uri.parse(avatar_save_url);
 
@@ -272,8 +277,7 @@ Future<void> _saveAvatarToServer(
       body: jsonEncode(requestBody),
       headers: {'Content-Type': 'application/json'},
     );
-    print("!!!!!!!!!!!${response.statusCode}");
-    if (response.statusCode~/100 == 2) {
+    if (response.statusCode ~/ 100 == 2) {
       // 저장이 완료되었을 때 알림을 표시합니다.
       showDialog(
         context: context,
@@ -299,7 +303,6 @@ Future<void> _saveAvatarToServer(
     }
   } catch (error) {
     // 저장 실패 시 오류 메시지를 표시합니다.
-    print("에러#############");
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -324,11 +327,9 @@ Future<void> _saveAvatarToServer(
   }
 }
 
-SingleChildScrollView _showItemInfoBox(
-  String itemicon,
-  String itemname,
-  /*String price*/
-) {
+SingleChildScrollView _showItemInfoBox(String itemicon,
+    String itemname,
+    /*String price*/) {
   return SingleChildScrollView(
     scrollDirection: Axis.horizontal,
     child: Row(
@@ -372,10 +373,10 @@ Column _showItemSmallIcon(String icon, String part) {
     children: [
       Container(
           child: Image.network(
-        '${item_icon_url}${icon}',
-        width: 28,
-        height: 28,
-      )),
+            '${item_icon_url}${icon}',
+            width: 28,
+            height: 28,
+          )),
       Text(
         '${part}',
         style: TextStyle(
