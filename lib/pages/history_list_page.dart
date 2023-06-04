@@ -47,7 +47,10 @@ class _HistoryPageState extends State<HistoryPage> {
         thickness: 4.0,
         radius: Radius.circular(8.0),
         child: WillPopScope(
-          onWillPop: () async => false,
+          onWillPop: () async {
+            Navigator.pushNamed(context, '/image');
+            return false;
+          },
           child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
