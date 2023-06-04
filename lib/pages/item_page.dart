@@ -18,12 +18,20 @@ class _ItemPageState extends State<ItemPage> {
   TextEditingController _titleController = TextEditingController();
   var itemList = [];
   late String email;
+  late String? emailFromRoute;
 
   @override
   void initState() {
     super.initState();
-    email = ModalRoute.of(context)!.settings.arguments.toString();
-    fetchItemWithRetry();
+    // Future.microtask를 사용하여 build 메소드 이후에 ModalRoute의 값을 가져옴
+    Future.microtask(() {
+      emailFromRoute = ModalRoute.of(context)?.settings.arguments.toString();
+      setState(() {
+        email = emailFromRoute ?? '';
+        print("#######################$email");
+      });
+      fetchItemWithRetry();
+    });
   }
 
   Future<void> fetchItemWithRetry() async {
@@ -59,12 +67,6 @@ class _ItemPageState extends State<ItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    final email = ModalRoute
-        .of(context)!
-        .settings
-        .arguments
-        .toString();
-
     if (itemList.isNotEmpty) {
       // data 배열 비어있을 때 빨간 오류창 방지하기 위해 if문 삽입
       return Scrollbar(
@@ -139,10 +141,7 @@ class _ItemPageState extends State<ItemPage> {
                       return Expanded(
                         child: Container(
                           margin: EdgeInsets.only(bottom: 16),
-                          width: MediaQuery
-                              .of(context)
-                              .size
-                              .width,
+                          width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(5),
@@ -208,11 +207,13 @@ Future<dynamic> _showBackDialog(BuildContext context) {
   );
 }
 
-Future<dynamic> _showSaveDialog(var data, BuildContext context,
+Future<dynamic> _showSaveDialog(var itemList, BuildContext context,
     TextEditingController titleController, String email) {
   return showDialog(
     context: context,
-    builder: (BuildContext context,) {
+    builder: (
+      BuildContext context,
+    ) {
       return AlertDialog(
         title: Text(
           '아바타 저장',
@@ -242,7 +243,7 @@ Future<dynamic> _showSaveDialog(var data, BuildContext context,
               TextButton(
                 onPressed: () {
                   String title = titleController.text;
-                  _saveAvatarToServer(data, context, title, email);
+                  _saveAvatarToServer(itemList, context, title, email);
                 },
                 child: Text('예'),
               ),
@@ -259,14 +260,14 @@ Future<dynamic> _showSaveDialog(var data, BuildContext context,
   );
 }
 
-Future<void> _saveAvatarToServer(var data, BuildContext context, String title,
-    String email) async {
+Future<void> _saveAvatarToServer(
+    var itemList, BuildContext context, String title, String email) async {
   try {
     final url = Uri.parse(avatar_save_url);
 
     // POST 요청을 보냅니다.
     Map<String, dynamic> requestBody = {
-      //'data': data,
+      'data': itemList,
       'title': title.toString(),
       'email': email.toString(),
     };
@@ -328,9 +329,11 @@ Future<void> _saveAvatarToServer(var data, BuildContext context, String title,
   }
 }
 
-SingleChildScrollView _showItemInfoBox(String itemicon,
-    String itemname,
-    /*String price*/) {
+SingleChildScrollView _showItemInfoBox(
+  String itemicon,
+  String itemname,
+  /*String price*/
+) {
   return SingleChildScrollView(
     scrollDirection: Axis.horizontal,
     child: Row(
@@ -374,10 +377,10 @@ Column _showItemSmallIcon(String icon, String part) {
     children: [
       Container(
           child: Image.network(
-            '${item_icon_url}${icon}',
-            width: 28,
-            height: 28,
-          )),
+        '${item_icon_url}${icon}',
+        width: 28,
+        height: 28,
+      )),
       Text(
         '${part}',
         style: TextStyle(
