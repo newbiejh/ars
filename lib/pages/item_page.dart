@@ -4,8 +4,7 @@ import 'package:ars/components/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-// TODO: 저장 버튼 및 기능 추가
-// TODO: 가격 api 연결
+// TODO: 저장 기능 추가
 
 class ItemPage extends StatefulWidget {
   const ItemPage({Key? key}) : super(key: key);
@@ -17,18 +16,19 @@ class ItemPage extends StatefulWidget {
 class _ItemPageState extends State<ItemPage> {
   TextEditingController _titleController = TextEditingController();
   var itemList = [];
-  late String email;
-  late String? emailFromRoute;
+  var email;
+  var emailFromRoute;
+  var itemnames = [];
+  var priceinfo = [];
 
   @override
   void initState() {
     super.initState();
     // Future.microtask를 사용하여 build 메소드 이후에 ModalRoute의 값을 가져옴
-    Future.microtask(() {
+    Future.microtask(() async {
       emailFromRoute = ModalRoute.of(context)?.settings.arguments.toString();
       setState(() {
         email = emailFromRoute ?? '';
-        print("#######################$email");
       });
       fetchItemWithRetry();
     });
@@ -42,6 +42,7 @@ class _ItemPageState extends State<ItemPage> {
 
     while (retryCount < maxRetryCount && !isStatusCode200) {
       final response = await http.get(Uri.parse(avatar_info_get_url + email));
+      print(response.statusCode);
 
       if (response.statusCode == 200) {
         isStatusCode200 = true;
@@ -54,26 +55,71 @@ class _ItemPageState extends State<ItemPage> {
             _updateShowroomURL(itemList);
           });
         }
+        for (var item in itemList) {
+          String name = item['name'];
+          itemnames.add(name);
+        }
       }
 
       retryCount++;
-      await Future.delayed(retryDelay);
+      if (!isStatusCode200) {
+        await Future.delayed(retryDelay);
+      }
     }
 
     if (!isStatusCode200) {
-      throw Exception('Failed to load Item');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              '오류',
+              textAlign: TextAlign.center,
+            ),
+            content: Text(
+              '아바타 생성 중 오류가 발생했습니다.',
+              textAlign: TextAlign.center,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pushNamed(context, '/image'),
+                child: Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
     }
+
+    for (var item in itemnames) {
+      final response =
+          await http.get(Uri.parse('$price_url_front$item$price_url_end'));
+
+      final jsonData = json.decode(response.body);
+      final jsonLength = jsonData['rows'].length;
+
+      if (jsonLength != 0) {
+        priceinfo.add("${jsonData['rows'][0]['price']}골드");
+      } else {
+        priceinfo.add("최근 1개월 내 거래 없음");
+      }
+    }
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    if (itemList.isNotEmpty) {
+    if (itemList.isNotEmpty && priceinfo.isNotEmpty) {
       // data 배열 비어있을 때 빨간 오류창 방지하기 위해 if문 삽입
       return Scrollbar(
         thickness: 4.0,
         radius: Radius.circular(8.0),
         child: WillPopScope(
-          onWillPop: () async => false,
+          onWillPop: () async {
+            _showBackDialog(context);
+            return false;
+          },
           child: Scaffold(
             appBar: AppBar(
               leading: IconButton(
@@ -149,7 +195,7 @@ class _ItemPageState extends State<ItemPage> {
                           child: _showItemInfoBox(
                             '${itemList[index]['icon']}',
                             '${itemList[index]['name']}',
-                            //'${item_price[index]}',
+                            '${priceinfo[index]}',
                           ),
                         ),
                       );
@@ -188,7 +234,10 @@ Future<dynamic> _showBackDialog(BuildContext context) {
           '뒤로가기',
           textAlign: TextAlign.center,
         ),
-        content: Text('이전 화면으로 돌아가시겠습니까? 현재 내용이 사라집니다.'),
+        content: Text(
+          '이전 화면으로 돌아가시겠습니까? 현재 내용이 사라집니다.',
+          textAlign: TextAlign.center,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pushNamed(context, '/image'),
@@ -267,12 +316,12 @@ Future<void> _saveAvatarToServer(
 
     // POST 요청을 보냅니다.
     Map<String, dynamic> requestBody = {
-      'data': itemList,
-      'title': title.toString(),
-      'email': email.toString(),
+      "data": itemList,
+      "title": title.toString(),
+      "email": email.toString(),
     };
 
-    print(requestBody);
+    print(jsonEncode(requestBody));
 
     final response = await http.post(
       url,
@@ -291,6 +340,28 @@ Future<void> _saveAvatarToServer(
             ),
             content: Text(
               '아바타가 성공적으로 저장되었습니다.',
+              textAlign: TextAlign.center,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              '저장 실패',
+              textAlign: TextAlign.center,
+            ),
+            content: Text(
+              '아바타 저장 중 오류가 발생했습니다.',
               textAlign: TextAlign.center,
             ),
             actions: [
@@ -330,10 +401,7 @@ Future<void> _saveAvatarToServer(
 }
 
 SingleChildScrollView _showItemInfoBox(
-  String itemicon,
-  String itemname,
-  /*String price*/
-) {
+    String itemicon, String itemname, String price) {
   return SingleChildScrollView(
     scrollDirection: Axis.horizontal,
     child: Row(
@@ -364,7 +432,7 @@ SingleChildScrollView _showItemInfoBox(
             SizedBox(
               height: 5,
             ),
-            //Text('가격 : ${price}'),
+            Text('가격 : ${price}'),
           ],
         )
       ],
