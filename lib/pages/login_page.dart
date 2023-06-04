@@ -23,13 +23,23 @@ class _LoginPageState extends State<LoginPage> {
       onWillPop: () async => false,
       child: Scaffold(
           body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                makeGoogleSignInButton("assets/images/google.PNG"),
-              ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '로그인',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
-          )),
+            SizedBox(
+              height: 30,
+            ),
+            makeGoogleSignInButton("assets/images/google.PNG"),
+          ],
+        ),
+      )),
     );
   }
 }
@@ -57,7 +67,7 @@ TextButton makeGoogleSignInButton(String imageaddress) {
 Future<UserCredential> signInWithGoogle() async {
   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
   final GoogleSignInAuthentication googleAuth =
-  await googleUser!.authentication;
+      await googleUser!.authentication;
   final OAuthCredential credential = GoogleAuthProvider.credential(
     accessToken: googleAuth.accessToken,
     idToken: googleAuth.idToken,
