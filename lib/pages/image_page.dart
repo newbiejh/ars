@@ -23,8 +23,14 @@ class ImagePage extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20.0),
               ),
-              title: Text('앱 종료'),
-              content: Text("앱을 종료하시겠습니까?"),
+              title: Text(
+                '앱 종료',
+                textAlign: TextAlign.center,
+              ),
+              content: Text(
+                "앱을 종료하시겠습니까?",
+                textAlign: TextAlign.center,
+              ),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -49,61 +55,70 @@ class ImagePage extends StatelessWidget {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
             if (snapshot.data != null) {
-              return WillPopScope(
-                  child: Scaffold(
-                      appBar: AppBar(
-                        iconTheme: IconThemeData(
-                          color: Colors.black,
-                        ),
-                        backgroundColor: Colors.transparent,
-                        elevation: 0.0,
+              return Scaffold(
+                  appBar: AppBar(
+                    iconTheme: IconThemeData(
+                      color: Colors.black,
+                    ),
+                    backgroundColor: Colors.transparent,
+                    elevation: 0.0,
+                  ),
+                  // 사이드 메뉴
+                  drawer: _showDrawer(context, snapshot),
+                  body: ListView(
+                    children: [
+                      SizedBox(
+                        height: 50,
                       ),
-                      // 사이드 메뉴
-                      drawer: _showDrawer(context, snapshot),
-                      body: ListView(
-                        children: [
-                          SizedBox(
-                            height: 50,
-                          ),
-                          TextButton(
-                            onPressed: () async {
-                              var picker = ImagePicker();
-                              var image = await picker.pickImage(
-                                  source: ImageSource.gallery);
-                              if (image != null) {
-                                String fileName = image.path.split('/').last;
-                                FormData formData = FormData.fromMap({
-                                  "files": await MultipartFile.fromFile(
-                                    image.path,
-                                    filename: fileName,
-                                  ),
-                                  "userid": snapshot.data!.email,
-                                });
-                                var response = await Dio()
-                                    .post(upload_url, data: formData);
+                      TextButton(
+                        onPressed: () async {
+                          var picker = ImagePicker();
+                          var image = await picker.pickImage(
+                              source: ImageSource.gallery);
+                          if (image != null) {
+                            String fileName = image.path.split('/').last;
+                            FormData formData = FormData.fromMap({
+                              "files": await MultipartFile.fromFile(
+                                image.path,
+                                filename: fileName,
+                              ),
+                              "userid": snapshot.data!.email,
+                            });
+                            var response =
+                                await Dio().post(upload_url, data: formData);
 
-                                if (response.statusCode! >= 200 &&
-                                    response.statusCode! < 300) {
-                                  Navigator.pushNamed(context, '/item',
-                                      arguments: snapshot.data?.email);
-                                }
-                              }
-                            },
-                            child: Text("아바타 이미지 업로드"),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          TextButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/item',
-                                    arguments: snapshot!.data?.email);
-                              },
-                              child: Text("아이템 출력 페이지 테스트용"))
-                        ],
-                      )),
-                  onWillPop: () async =>
-                      false); // TODO: 뒤로가기 버튼 누를 시 종료 다이얼로그 출력
+                            if (response.statusCode! == 200) {
+                              Navigator.pushNamed(context, '/item',
+                                  arguments: snapshot.data?.email);
+                            }
+                          }
+                        },
+                        child: Text("아바타 이미지 업로드"),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/item',
+                                arguments: snapshot.data?.email);
+                          },
+                          child: Text("아이템 출력 페이지 테스트용")),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Text(
+                        '[!] 전신이 잘 드러나는 사진일수록 AI가 좋아합니다!',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Image.asset('assets/images/character_example.PNG',
+                          fit: BoxFit.contain)
+                    ],
+                  ));
             } else
               return LoginPage();
           }),
@@ -113,31 +128,95 @@ class ImagePage extends StatelessWidget {
   // 사이드 메뉴 출력 함수
   Drawer _showDrawer(BuildContext context, AsyncSnapshot<User?> snapshot) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          ListTile(
-            leading: Icon(Icons.home, color: Colors.black),
-            title: Text('내 정보'),
-            onTap: () {
-              _showUserInfo(context, snapshot);
-            },
-            trailing: Icon(Icons.arrow_forward),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                SizedBox(
+                  height: 26,
+                ),
+                ListTile(
+                  leading: Icon(Icons.home, color: Colors.black),
+                  title: Text('내 정보'),
+                  onTap: () {
+                    _showUserInfo(context, snapshot);
+                  },
+                  trailing: Icon(Icons.arrow_forward),
+                ),
+                ListTile(
+                  leading: Icon(Icons.history, color: Colors.black),
+                  title: Text('아바타 저장 기록'),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/history');
+                  },
+                  trailing: Icon(Icons.arrow_forward),
+                ),
+                ListTile(
+                  leading: Icon(Icons.logout, color: Colors.black),
+                  title: Text('로그아웃'),
+                  onTap: () {
+                    _showLogoutCheck(context, snapshot);
+                  },
+                ),
+              ],
+            ),
           ),
-          ListTile(
-            leading: Icon(Icons.history, color: Colors.black),
-            title: Text('아바타 저장 기록'),
-            onTap: () {
-              Navigator.pushNamed(context, '/history');
-            },
-            trailing: Icon(Icons.arrow_forward),
+
+          // Drawer 하단에 글자 추가
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '금오공과대학교',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(
+                  height: 18,
+                ),
+                Text(
+                  '서재용(AI)',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+                Text(
+                  '이정훈(App Design)',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+                Text(
+                  '김민성(Server & DB)',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orangeAccent,
+                  ),
+                ),
+                SizedBox(
+                  height: 18,
+                ),
+                Text(
+                  'ver 0.1',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
           ),
-          ListTile(
-              leading: Icon(Icons.logout, color: Colors.black),
-              title: Text('로그아웃'),
-              onTap: () {
-                _showLogoutCheck(context, snapshot);
-              }),
         ],
       ),
     );
