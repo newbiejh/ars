@@ -3,7 +3,7 @@ String main_url = "https://6843-125-137-22-250.ngrok-free.app";
 
 // 서버 url
 String upload_url = "${main_url}/upload";
-String avatar_info_get_url = "${main_url}/jsonget?job=priest&gender=m_";
+String avatar_info_get_url = "${main_url}/jsonget?job=priest&gender=m_&userid=";
 String history_check_url = "";
 String avatar_save_url = "${main_url}/member/save1";
 

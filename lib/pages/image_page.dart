@@ -38,18 +38,22 @@ class ImagePage extends StatelessWidget {
                             var image = await picker.pickImage(
                                 source: ImageSource.gallery);
                             if (image != null) {
-                              print("###########3"); // TODO: 마지막에 제거
                               String fileName = image.path.split('/').last;
                               FormData formData = FormData.fromMap({
                                 "files": await MultipartFile.fromFile(
-                                    image.path,
-                                    filename: fileName),
+                                  image.path,
+                                  filename: fileName,
+                                ),
+                                "userid": snapshot.data!.email,
                               });
-                              var response = await Dio().post(
-                                upload_url,
-                                data: formData,
-                              );
-                              print("@@@@@@${response.statusCode}"); // TODO: 마지막에 제거
+                              var response =
+                                  await Dio().post(upload_url, data: formData);
+
+                              if (response.statusCode! >= 200 &&
+                                  response.statusCode! < 300) {
+                                Navigator.pushNamed(context, '/item',
+                                    arguments: snapshot.data?.email);
+                              }
                             }
                           },
                           child: Text("아바타 이미지 업로드"),
@@ -59,7 +63,8 @@ class ImagePage extends StatelessWidget {
                         ),
                         TextButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, '/item', arguments: snapshot!.data?.email);
+                              Navigator.pushNamed(context, '/item',
+                                  arguments: snapshot!.data?.email);
                             },
                             child: Text("아이템 출력 페이지 테스트용"))
                       ],

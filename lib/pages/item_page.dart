@@ -17,10 +17,12 @@ class ItemPage extends StatefulWidget {
 class _ItemPageState extends State<ItemPage> {
   TextEditingController _titleController = TextEditingController();
   var itemList = [];
+  late String email;
 
   @override
   void initState() {
     super.initState();
+    email = ModalRoute.of(context)!.settings.arguments.toString();
     fetchItemWithRetry();
   }
 
@@ -31,8 +33,7 @@ class _ItemPageState extends State<ItemPage> {
     var isStatusCode200 = false;
 
     while (retryCount < maxRetryCount && !isStatusCode200) {
-      final response = await http.get(Uri.parse(avatar_info_get_url));
-      print(response.statusCode);
+      final response = await http.get(Uri.parse(avatar_info_get_url + email));
 
       if (response.statusCode == 200) {
         isStatusCode200 = true;
