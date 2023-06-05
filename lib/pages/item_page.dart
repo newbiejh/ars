@@ -258,6 +258,8 @@ class _ItemPageState extends State<ItemPage> {
             CircularProgressIndicator(),
             SizedBox(height: 16),
             Text('생성 중입니다...'),
+            SizedBox(height: 16),
+            Text('최대 20초...'),
           ],
         ),
       ),
