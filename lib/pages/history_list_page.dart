@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:ars/components/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,35 +14,64 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  var data = [];
+  var history = [];
+  var email;
+  var emailFromRoute;
 
   @override
   void initState() {
     super.initState();
-    fetchHistory();
+    // Future.microtask를 사용하여 build 메소드 이후에 ModalRoute의 값을 가져옴
+    Future.microtask(() async {
+      emailFromRoute = ModalRoute.of(context)?.settings.arguments.toString();
+      setState(() {
+        email = emailFromRoute ?? '';
+      });
+      fetchHistory();
+    });
   }
 
   Future fetchHistory() async {
-    final response = await http
-        .get(Uri.parse('https://jsonplaceholder.typicode.com/comments'));
+    final response = await http.get(Uri.parse('${history_check_url}/$email'));
 
     var list = [];
     if (response.statusCode == 200) {
       String responseBody = utf8.decode(response.bodyBytes);
       list = jsonDecode(responseBody);
+      print('#############$list');
     } else {
-      throw Exception('Failed to load History');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(
+              '오류',
+              textAlign: TextAlign.center,
+            ),
+            content: Text(
+              '저장 기록을 불러오는 중 오류가 발생했습니다.',
+              textAlign: TextAlign.center,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
+                child: Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
     }
-    if (this.mounted) {
+    if (mounted) {
       setState(() {
-        data = list;
+        history = list;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (data.isNotEmpty) {
+    if (history.isNotEmpty) {
       // data 배열 비어있을 때 빨간 오류창 방지하기 위해 if문 삽입
       return Scrollbar(
         thickness: 4.0,
@@ -74,7 +104,7 @@ class _HistoryPageState extends State<HistoryPage> {
                     physics: ClampingScrollPhysics(),
                     scrollDirection: Axis.vertical,
                     // 스크롤 방향을 세로로 지정
-                    itemCount: data.length,
+                    itemCount: history.length,
                     itemBuilder: (context, index) {
                       return Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
@@ -89,7 +119,8 @@ class _HistoryPageState extends State<HistoryPage> {
                               child: GestureDetector(
                                 onTap: () {
                                   Navigator.pushNamed(context, '/check',
-                                      arguments: data[index]['id'].toString());
+                                      arguments:
+                                          history[index]['id'].toString());
                                 },
                                 child: Container(
                                   height: 40,
@@ -98,7 +129,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                     border: Border.all(color: Colors.grey),
                                     borderRadius: BorderRadius.circular(5),
                                   ),
-                                  child: Text('${data[index]['email']}'),
+                                  child: Text('${history[index]['email']}'),
                                 ),
                               )));
                     },
