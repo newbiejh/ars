@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:ars/components/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 // TODO: 저장 기능 추가
 
@@ -36,7 +37,7 @@ class _ItemPageState extends State<ItemPage> {
 
   Future<void> fetchItemWithRetry() async {
     const maxRetryCount = 5;
-    const retryDelay = Duration(seconds: 5);
+    const retryDelay = Duration(seconds: 4);
     var retryCount = 0;
     var isStatusCode200 = false;
 
@@ -82,7 +83,7 @@ class _ItemPageState extends State<ItemPage> {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pushNamed(context, '/image'),
+                onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
                 child: Text('확인'),
               ),
             ],
@@ -99,7 +100,10 @@ class _ItemPageState extends State<ItemPage> {
       final jsonLength = jsonData['rows'].length;
 
       if (jsonLength != 0) {
-        priceinfo.add("${jsonData['rows'][0]['price']}골드");
+        final price = jsonData['rows'][0]['price'];
+        final formattedPrice =
+            NumberFormat('#,##0').format(price); // 세 자리마다 ','를 추가하여 형식화
+        priceinfo.add("$formattedPrice골드");
       } else {
         priceinfo.add("최근 1개월 내 거래 없음");
       }
@@ -150,11 +154,49 @@ class _ItemPageState extends State<ItemPage> {
                 children: [
                   Row(
                     children: [
-                      Image.network(
-                        showroom_url,
-                        width: 200,
-                        height: 200,
-                        fit: BoxFit.cover,
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return Dialog(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    AppBar(
+                                      backgroundColor: Colors.yellow,
+                                      leading: IconButton(
+                                        icon: Icon(
+                                          Icons.arrow_back,
+                                          color: Colors.black,
+                                        ),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      title: Text(
+                                        '자세히 보기',
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                    Image.network(
+                                      showroom_url,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: Image.network(
+                          showroom_url,
+                          width: 200,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                       Expanded(
                         child: Column(
@@ -240,7 +282,7 @@ Future<dynamic> _showBackDialog(BuildContext context) {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pushNamed(context, '/image'),
+            onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
             child: Text('예'),
           ),
           SizedBox(
@@ -329,10 +371,13 @@ Future<void> _saveAvatarToServer(
       headers: {'Content-Type': 'application/json'},
     );
     if (response.statusCode ~/ 100 == 2) {
-      // 저장이 완료되었을 때 알림을 표시합니다.
       showDialog(
         context: context,
         builder: (BuildContext context) {
+          Future.delayed(Duration(seconds: 1), () {
+            Navigator.pop(context); // 다이얼로그 닫기
+          });
+
           return AlertDialog(
             title: Text(
               '저장 완료',
@@ -375,7 +420,6 @@ Future<void> _saveAvatarToServer(
       );
     }
   } catch (error) {
-    // 저장 실패 시 오류 메시지를 표시합니다.
     showDialog(
       context: context,
       builder: (BuildContext context) {
