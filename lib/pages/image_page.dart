@@ -115,8 +115,11 @@ class ImagePage extends StatelessWidget {
                           fontSize: 16,
                         ),
                       ),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Image.asset('assets/images/character_example.PNG',
-                          fit: BoxFit.contain)
+                          width: 200, height: 400, fit: BoxFit.contain)
                     ],
                   ));
             } else
@@ -150,7 +153,8 @@ class ImagePage extends StatelessWidget {
                   leading: Icon(Icons.history, color: Colors.black),
                   title: Text('아바타 저장 기록'),
                   onTap: () {
-                    Navigator.pushNamed(context, '/history');
+                    Navigator.pushNamed(context, '/history',
+                        arguments: snapshot.data?.email);
                   },
                   trailing: Icon(Icons.arrow_forward),
                 ),
