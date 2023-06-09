@@ -1,8 +1,9 @@
 // Url 저장 파일
-String main_url = "https://a99e-112-217-167-202.ngrok-free.app";
+String main_url = "https://4c88-125-137-22-250.ngrok-free.app";
+String gpu_url = "http://35.189.147.240:55537";
 
 // 서버 url
-String upload_url = "${main_url}/upload";
+String upload_url = "${gpu_url}/input_image";
 String avatar_info_get_url = "${main_url}/jsonget?job=priest&gender=m_&userid=";
 String history_check_url = "${avatar_save_url}";
 String avatar_save_url = "${main_url}/users";

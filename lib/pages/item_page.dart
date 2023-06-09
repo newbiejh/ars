@@ -21,6 +21,7 @@ class _ItemPageState extends State<ItemPage> {
   var emailFromRoute;
   var itemnames = [];
   var priceinfo = [];
+  http.Client? _client; // http.Client 객체 저장 변수
 
   @override
   void initState() {
@@ -35,15 +36,21 @@ class _ItemPageState extends State<ItemPage> {
     });
   }
 
+  @override
+  void dispose() {
+    _client?.close(); // http.Client 객체 닫기
+    super.dispose();
+  }
+
   Future<void> fetchItemWithRetry() async {
-    const maxRetryCount = 5;
-    const retryDelay = Duration(seconds: 4);
+    const maxRetryCount = 20;
+    const retryDelay = Duration(seconds: 15);
     var retryCount = 0;
     var isStatusCode200 = false;
 
     while (retryCount < maxRetryCount && !isStatusCode200) {
       final response = await http.get(Uri.parse(avatar_info_get_url + email));
-      print(response.statusCode);
+      print('아바타 생성 statusCode : ${response.statusCode}');
 
       if (response.statusCode == 200) {
         isStatusCode200 = true;
@@ -259,7 +266,7 @@ class _ItemPageState extends State<ItemPage> {
             SizedBox(height: 16),
             Text('생성 중입니다...'),
             SizedBox(height: 16),
-            Text('최대 20초...'),
+            Text('최대 5분...'),
           ],
         ),
       ),
