@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-// TODO: 저장 기능 추가
-
 class ItemPage extends StatefulWidget {
   const ItemPage({Key? key}) : super(key: key);
 
@@ -21,7 +19,6 @@ class _ItemPageState extends State<ItemPage> {
   var emailFromRoute;
   var itemnames = [];
   var priceinfo = [];
-  http.Client? _client; // http.Client 객체 저장 변수
   bool isFetching = false; // 상태 변수 추가
 
   @override
@@ -40,7 +37,6 @@ class _ItemPageState extends State<ItemPage> {
   @override
   void dispose() {
     super.dispose();
-    _client?.close(); // http.Client 객체 닫기
     _replaceShowroomURL(itemList);
   }
 
@@ -60,7 +56,7 @@ class _ItemPageState extends State<ItemPage> {
     var retryCount = 0;
     var isStatusCode200 = false;
 
-    while (retryCount < maxRetryCount && !isStatusCode200 && mounted) {
+    while (retryCount < maxRetryCount && isStatusCode200 && mounted) {
       final response = await http.get(Uri.parse(avatar_info_get_url + email));
       print('아바타 생성 statusCode : ${response.statusCode}');
 
@@ -82,12 +78,12 @@ class _ItemPageState extends State<ItemPage> {
       }
 
       retryCount++;
-      if (!isStatusCode200) {
+      if (isStatusCode200) {
         await Future.delayed(retryDelay);
       }
     }
 
-    if (!isStatusCode200) {
+    if (isStatusCode200) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
