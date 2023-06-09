@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
+// TODO: 저장 기능 추가
+
 class ItemPage extends StatefulWidget {
   const ItemPage({Key? key}) : super(key: key);
 
@@ -56,7 +58,7 @@ class _ItemPageState extends State<ItemPage> {
     var retryCount = 0;
     var isStatusCode200 = false;
 
-    while (retryCount < maxRetryCount && isStatusCode200 && mounted) {
+    while (retryCount < maxRetryCount && !isStatusCode200 && mounted) {
       final response = await http.get(Uri.parse(avatar_info_get_url + email));
       print('아바타 생성 statusCode : ${response.statusCode}');
 
@@ -78,12 +80,12 @@ class _ItemPageState extends State<ItemPage> {
       }
 
       retryCount++;
-      if (isStatusCode200) {
+      if (!isStatusCode200) {
         await Future.delayed(retryDelay);
       }
     }
 
-    if (isStatusCode200) {
+    if (!isStatusCode200) {
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -110,7 +112,7 @@ class _ItemPageState extends State<ItemPage> {
 
     for (var item in itemnames) {
       final response =
-          await http.get(Uri.parse('$price_url_front$item$price_url_end'));
+      await http.get(Uri.parse('$price_url_front$item$price_url_end'));
 
       final jsonData = json.decode(response.body);
       final jsonLength = jsonData['rows'].length;
@@ -118,7 +120,7 @@ class _ItemPageState extends State<ItemPage> {
       if (jsonLength != 0) {
         final price = jsonData['rows'][0]['price'];
         final formattedPrice =
-            NumberFormat('#,##0').format(price); // 세 자리마다 ','를 추가하여 형식화
+        NumberFormat('#,##0').format(price); // 세 자리마다 ','를 추가하여 형식화
         priceinfo.add("$formattedPrice골드");
       } else {
         priceinfo.add("최근 1개월 내 거래 없음");
@@ -328,8 +330,8 @@ Future<dynamic> _showSaveDialog(var itemList, BuildContext context,
   return showDialog(
     context: context,
     builder: (
-      BuildContext context,
-    ) {
+        BuildContext context,
+        ) {
       return AlertDialog(
         title: Text(
           '아바타 저장',
@@ -514,10 +516,10 @@ Column _showItemSmallIcon(String icon, String part) {
     children: [
       Container(
           child: Image.network(
-        '${item_icon_url}${icon}',
-        width: 28,
-        height: 28,
-      )),
+            '${item_icon_url}${icon}',
+            width: 28,
+            height: 28,
+          )),
       Text(
         '${part}',
         style: TextStyle(
