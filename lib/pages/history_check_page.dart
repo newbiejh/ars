@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:ars/components/url.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class HistoryCheckPage extends StatefulWidget {
   const HistoryCheckPage({Key? key}) : super(key: key);
@@ -12,35 +13,58 @@ class HistoryCheckPage extends StatefulWidget {
 }
 
 class _HistoryCheckPageState extends State<HistoryCheckPage> {
-  var data = [];
+  var itemList = [];
+  var itemnames = [];
+  var data;
+  var priceinfo = [];
 
   @override
   void initState() {
     super.initState();
-    fetchItem();
+    Future.microtask(() async {
+      data =
+          ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
+      setState(() {
+
+      });
+      getItemPrice();
+    });
   }
 
-  Future fetchItem() async {
-    final response = await http
-        .get(Uri.parse('https://jsonplaceholder.typicode.com/comments'));
-
-    var list = [];
-    if (response.statusCode == 200) {
-      String responseBody = utf8.decode(response.bodyBytes);
-      list = jsonDecode(responseBody);
-    } else {
-      throw Exception('Failed to load Item');
-    }
-    if (this.mounted) {
+  Future<void> getItemPrice() async {
+    if (mounted) {
       setState(() {
-        data = list;
+        itemList = data?['data'];
+        _updateShowroomURL(itemList);
       });
     }
+    for (var item in itemList) {
+      String name = item['name'];
+      itemnames.add(name);
+    }
+
+    for (var item in itemnames) {
+      final response =
+          await http.get(Uri.parse('$price_url_front$item$price_url_end'));
+
+      final jsonData = json.decode(response.body);
+      final jsonLength = jsonData['rows'].length;
+
+      if (jsonLength != 0) {
+        final price = jsonData['rows'][0]['price'];
+        final formattedPrice =
+            NumberFormat('#,##0').format(price); // 세 자리마다 ','를 추가하여 형식화
+        priceinfo.add("$formattedPrice골드");
+      } else {
+        priceinfo.add("최근 1개월 내 거래 없음");
+      }
+    }
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    if (data.isNotEmpty) {
+    if (itemList.isNotEmpty && priceinfo.isNotEmpty) {
       // data 배열 비어있을 때 빨간 오류창 방지하기 위해 if문 삽입
       return Scrollbar(
         thickness: 4.0,
@@ -56,7 +80,7 @@ class _HistoryCheckPageState extends State<HistoryCheckPage> {
                   icon: Icon(Icons.arrow_back),
                   color: Colors.black),
               title: Text(
-                '아바타 저장 내역 조회',
+                '${data!['title']} 조회',
                 style: TextStyle(color: Colors.black),
               ),
               backgroundColor: Colors.yellow,
@@ -76,14 +100,14 @@ class _HistoryCheckPageState extends State<HistoryCheckPage> {
                       Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: List.generate(3, (rowIndex) {
+                          children: List.generate(2, (rowIndex) {
                             return Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: List.generate(3, (colIndex) {
-                                int index = rowIndex * 3 + colIndex;
+                              children: List.generate(4, (colIndex) {
+                                int index = rowIndex * 4 + colIndex;
                                 return _showItemSmallIcon(
-                                    '${testData[index]['icon']}',
-                                    '${testData[index]['part']}');
+                                    '${data!['data'][index]['icon']}',
+                                    '${data!['data'][index]['part']}');
                               }),
                             );
                           }),
@@ -100,19 +124,20 @@ class _HistoryCheckPageState extends State<HistoryCheckPage> {
                     itemCount: testData.length,
                     // 아이템 총 개수는 10개, 무기 제외하면 9개
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10),
+                      return Expanded(
                         child: Container(
-                            height: 40,
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: _showItemInfoBox(
-                                '${testData[index]['icon']}',
-                                '${testData[index]['name']}',
-                                '500')),
+                          margin: EdgeInsets.only(bottom: 16),
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: _showItemInfoBox(
+                            '${itemList[index]['icon']}',
+                            '${itemList[index]['name']}',
+                            '${priceinfo[index]}',
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -193,11 +218,16 @@ SingleChildScrollView _showItemInfoBox(
             ),
           ),
         ),
-        Text(itemname),
-        SizedBox(
-          width: 50,
-        ),
-        Text('가격 : ${price}')
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(itemname),
+            SizedBox(
+              height: 5,
+            ),
+            Text('가격 : ${price}'),
+          ],
+        )
       ],
     ),
   );
@@ -208,10 +238,10 @@ Column _showItemSmallIcon(String icon, String part) {
     children: [
       Container(
           child: Image.network(
-            '${item_icon_url}${icon}',
-            width: 28,
-            height: 28,
-          )),
+        '${item_icon_url}${icon}',
+        width: 28,
+        height: 28,
+      )),
       Text(
         '${part}',
         style: TextStyle(
@@ -223,4 +253,26 @@ Column _showItemSmallIcon(String icon, String part) {
   );
 }
 
-// TODO: 저장 기록 상세 GET
+void _updateShowroomURL(var itemList) {
+  Map<String, String> partMap = {
+    '머리': '%22hair%22',
+    '모자': '%22cap%22',
+    '얼굴': '%22face%22',
+    '목가슴': '%22neck%22',
+    '상의': '%22coat%22',
+    '허리': '%22belt%22',
+    '하의': '%22pants%22',
+    '신발': '%22shoes%22',
+  };
+
+  for (int index = 0; index < itemList.length; index++) {
+    String part = itemList[index]['part'];
+    String? key = partMap[part];
+
+    if (key != null) {
+      String replaceValue =
+          '%7B%22index%22:%22${itemList[index]['index']}%22,%20%22color%22:0%7D';
+      showroom_url = showroom_url.replaceAll('$key:null', '$key:$replaceValue');
+    }
+  }
+}
