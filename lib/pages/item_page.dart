@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-// TODO: 저장 기능 추가
-
 class ItemPage extends StatefulWidget {
   const ItemPage({Key? key}) : super(key: key);
 
