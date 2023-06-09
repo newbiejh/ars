@@ -24,11 +24,16 @@ class _HistoryCheckPageState extends State<HistoryCheckPage> {
     Future.microtask(() async {
       data =
           ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>?;
-      setState(() {
-
-      });
+      setState(() {});
       getItemPrice();
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    showroom_url =
+        "https://avatarsync.df.nexon.com/wear/image/stand@2x.png?wearInfo=%7B%22job%22:%224%22,%22level%22:0,%22hair%22:null,%22cap%22:null,%22face%22:null,%22neck%22:null,%22coat%22:null,%22belt%22:null,%22pants%22:null,%22shoes%22:null,%22skin%22:null,%22weapon1%22:null,%22package%22:null,%22animation%22:%22Stand%22%7D";
   }
 
   Future<void> getItemPrice() async {

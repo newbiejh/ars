@@ -86,7 +86,8 @@ class ImagePage extends StatelessWidget {
                             });
                             var response =
                                 await Dio().post(upload_url, data: formData);
-                            print('이미지 전송 내역 statusCode : ${response.statusCode}');
+                            print(
+                                '이미지 전송 내역 statusCode : ${response.statusCode}');
 
                             if (response.statusCode! == 200) {
                               Navigator.pushNamed(context, '/item',
