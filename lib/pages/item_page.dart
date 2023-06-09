@@ -60,7 +60,7 @@ class _ItemPageState extends State<ItemPage> {
     var retryCount = 0;
     var isStatusCode200 = false;
 
-    while (retryCount < maxRetryCount && !isStatusCode200) {
+    while (retryCount < maxRetryCount && !isStatusCode200 && mounted) {
       final response = await http.get(Uri.parse(avatar_info_get_url + email));
       print('아바타 생성 statusCode : ${response.statusCode}');
 
@@ -272,6 +272,7 @@ class _ItemPageState extends State<ItemPage> {
     }
     return WillPopScope(
       onWillPop: () async {
+        _showBackDialog(context);
         return false;
       },
       child: Scaffold(
