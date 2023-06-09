@@ -181,7 +181,7 @@ Future<dynamic> _showBackDialog(BuildContext context) {
         content: Text('이전 화면으로 돌아가시겠습니까? 현재 내용이 사라집니다.'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pushNamed(context, '/history'),
+            onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
             child: Text('예'),
           ),
           SizedBox(
