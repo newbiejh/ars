@@ -32,8 +32,7 @@ class _HistoryCheckPageState extends State<HistoryCheckPage> {
   @override
   void dispose() {
     super.dispose();
-    showroom_url =
-        "https://avatarsync.df.nexon.com/wear/image/stand@2x.png?wearInfo=%7B%22job%22:%224%22,%22level%22:0,%22hair%22:null,%22cap%22:null,%22face%22:null,%22neck%22:null,%22coat%22:null,%22belt%22:null,%22pants%22:null,%22shoes%22:null,%22skin%22:null,%22weapon1%22:null,%22package%22:null,%22animation%22:%22Stand%22%7D";
+    _replaceShowroomURL(itemList);
   }
 
   Future<void> getItemPrice() async {
@@ -182,7 +181,7 @@ Future<dynamic> _showBackDialog(BuildContext context) {
         content: Text('이전 화면으로 돌아가시겠습니까? 현재 내용이 사라집니다.'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pushNamed(context, '/image'),
+            onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
             child: Text('예'),
           ),
           SizedBox(
@@ -278,6 +277,30 @@ void _updateShowroomURL(var itemList) {
       String replaceValue =
           '%7B%22index%22:%22${itemList[index]['index']}%22,%20%22color%22:0%7D';
       showroom_url = showroom_url.replaceAll('$key:null', '$key:$replaceValue');
+    }
+  }
+}
+
+void _replaceShowroomURL(var itemList) {
+  Map<String, String> partMap = {
+    '머리': '%22hair%22',
+    '모자': '%22cap%22',
+    '얼굴': '%22face%22',
+    '목가슴': '%22neck%22',
+    '상의': '%22coat%22',
+    '허리': '%22belt%22',
+    '하의': '%22pants%22',
+    '신발': '%22shoes%22',
+  };
+
+  for (int index = 0; index < itemList.length; index++) {
+    String part = itemList[index]['part'];
+    String? key = partMap[part];
+
+    if (key != null) {
+      String replaceValue =
+          '%7B%22index%22:%22${itemList[index]['index']}%22,%20%22color%22:0%7D';
+      showroom_url = showroom_url.replaceAll('$key:$replaceValue', '$key:null');
     }
   }
 }
