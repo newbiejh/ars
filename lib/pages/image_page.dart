@@ -78,7 +78,7 @@ class ImagePage extends StatelessWidget {
                           if (image != null) {
                             String fileName = image.path.split('/').last;
                             FormData formData = FormData.fromMap({
-                              "files": await MultipartFile.fromFile(
+                              "file": await MultipartFile.fromFile(
                                 image.path,
                                 filename: fileName,
                               ),
@@ -86,6 +86,7 @@ class ImagePage extends StatelessWidget {
                             });
                             var response =
                                 await Dio().post(upload_url, data: formData);
+                            print('이미지 전송 내역 statusCode : ${response.statusCode}');
 
                             if (response.statusCode! == 200) {
                               Navigator.pushNamed(context, '/item',

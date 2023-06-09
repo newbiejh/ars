@@ -33,6 +33,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Future fetchHistory() async {
     final response = await http.get(Uri.parse('${history_check_url}/$email'));
+    print('저장 내역 statusCode : ${response.statusCode}');
 
     var list = [];
     if (response.statusCode == 200) {
