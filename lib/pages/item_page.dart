@@ -22,6 +22,7 @@ class _ItemPageState extends State<ItemPage> {
   var itemnames = [];
   var priceinfo = [];
   http.Client? _client; // http.Client 객체 저장 변수
+  bool isFetching = false; // 상태 변수 추가
 
   @override
   void initState() {
@@ -32,18 +33,28 @@ class _ItemPageState extends State<ItemPage> {
       setState(() {
         email = emailFromRoute ?? '';
       });
-      fetchItemWithRetry();
+      fetchData();
     });
   }
 
   @override
   void dispose() {
-    _client?.close(); // http.Client 객체 닫기
     super.dispose();
+    _client?.close(); // http.Client 객체 닫기
+  }
+
+  void fetchData() {
+    if (!isFetching) {
+      // 중복 호출 방지
+      isFetching = true; // 실행 중 상태로 변경
+      fetchItemWithRetry().then((_) {
+        isFetching = false; // 완료 후 상태 변경
+      });
+    }
   }
 
   Future<void> fetchItemWithRetry() async {
-    const maxRetryCount = 20;
+    const maxRetryCount = 10;
     const retryDelay = Duration(seconds: 15);
     var retryCount = 0;
     var isStatusCode200 = false;
@@ -90,7 +101,8 @@ class _ItemPageState extends State<ItemPage> {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
+                onPressed: () =>
+                    Navigator.popUntil(context, (route) => route.isFirst),
                 child: Text('확인'),
               ),
             ],
@@ -257,21 +269,26 @@ class _ItemPageState extends State<ItemPage> {
         ),
       );
     }
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('생성 중입니다...'),
-            SizedBox(height: 16),
-            Text('최대 5분...'),
-          ],
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('생성 중입니다...'),
+              SizedBox(height: 16),
+              Text('최대 5분...'),
+            ],
+          ),
         ),
+        backgroundColor: Colors.white,
       ),
-      backgroundColor: Colors.white,
-    ); // data에 값 없으면 진행 중 마크 표시
+    );
   }
 }
 
@@ -291,7 +308,8 @@ Future<dynamic> _showBackDialog(BuildContext context) {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
+            onPressed: () =>
+                Navigator.popUntil(context, (route) => route.isFirst),
             child: Text('예'),
           ),
           SizedBox(
