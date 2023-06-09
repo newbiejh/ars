@@ -1,6 +1,6 @@
 // Url 저장 파일
 String main_url = "https://4c88-125-137-22-250.ngrok-free.app";
-String gpu_url = "http://35.189.147.240:55537";
+String gpu_url = "http://34.84.131.19:56331";
 
 // 서버 url
 String upload_url = "${gpu_url}/input_image";
