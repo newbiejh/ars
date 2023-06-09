@@ -14,9 +14,10 @@ class HistoryPage extends StatefulWidget {
 }
 
 class _HistoryPageState extends State<HistoryPage> {
-  var history = [];
-  var email;
+  var useremail;
   var emailFromRoute;
+  var history;
+  var save_list_length;
 
   @override
   void initState() {
@@ -25,21 +26,21 @@ class _HistoryPageState extends State<HistoryPage> {
     Future.microtask(() async {
       emailFromRoute = ModalRoute.of(context)?.settings.arguments.toString();
       setState(() {
-        email = emailFromRoute ?? '';
+        useremail = emailFromRoute ?? '';
       });
       fetchHistory();
     });
   }
 
   Future fetchHistory() async {
-    final response = await http.get(Uri.parse('${history_check_url}/$email'));
+    final response =
+        await http.get(Uri.parse('${history_check_url}/test1@naver.com'));
     print('저장 내역 statusCode : ${response.statusCode}');
 
-    var list = [];
     if (response.statusCode == 200) {
-      String responseBody = utf8.decode(response.bodyBytes);
-      list = jsonDecode(responseBody);
-      print('#############$list');
+      var responseBody = utf8.decode(response.bodyBytes);
+      history = jsonDecode(responseBody);
+      save_list_length = response.body.length;
     } else {
       showDialog(
         context: context,
@@ -55,7 +56,8 @@ class _HistoryPageState extends State<HistoryPage> {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.popUntil(context, (route) => route.isFirst),
+                onPressed: () =>
+                    Navigator.popUntil(context, (route) => route.isFirst),
                 child: Text('확인'),
               ),
             ],
@@ -63,11 +65,7 @@ class _HistoryPageState extends State<HistoryPage> {
         },
       );
     }
-    if (mounted) {
-      setState(() {
-        history = list;
-      });
-    }
+    setState(() {});
   }
 
   @override
@@ -105,34 +103,53 @@ class _HistoryPageState extends State<HistoryPage> {
                     physics: ClampingScrollPhysics(),
                     scrollDirection: Axis.vertical,
                     // 스크롤 방향을 세로로 지정
-                    itemCount: history.length,
+                    itemCount: history.isEmpty ? 1 : history.length,
                     itemBuilder: (context, index) {
-                      return Padding(
+                      if (history.isNotEmpty) {
+                        return Padding(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Container(
-                              height: 40,
-                              width: double.infinity,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.pushNamed(context, '/check',
-                                      arguments:
-                                          history[index]['id'].toString());
-                                },
-                                child: Container(
-                                  height: 40,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey),
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: Text('${history[index]['email']}'),
+                            height: 150,
+                            width: double.infinity,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, '/check',
+                                    arguments: history[index]);
+                              },
+                              child: Container(
+                                height: double.infinity,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey),
+                                  borderRadius: BorderRadius.circular(5),
                                 ),
-                              )));
+                                child: Column(
+                                  children: [
+                                    Text('${history[index]['title']}'),
+                                    SizedBox(height: 5),
+                                    Expanded(
+                                      child: ListView.builder(
+                                        itemCount: 8,
+                                        itemBuilder: (context, i) => Align(
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            '${history[index]['data'][i]['part']} : ${history[index]['data'][i]['name']}',
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }
                     },
                   ),
                 ],
@@ -157,5 +174,3 @@ class _HistoryPageState extends State<HistoryPage> {
     ); // data에 값 없으면 진행 중 마크 표시
   }
 }
-
-// TODO: 저장 기록 GET
