@@ -49,7 +49,7 @@ class _HistoryPageState extends State<HistoryPage> {
               textAlign: TextAlign.center,
             ),
             content: Text(
-              '저장 기록이 없거나 저장 기록을 불러오는 중 오류가 발생했습니다.',
+              '저장 기록이 없거나 불러오는 중 오류가 발생했습니다.',
               textAlign: TextAlign.center,
             ),
             actions: [
