@@ -1,7 +1,9 @@
 # ARS
 
 Avatar Recommend System
-Front-end 
+Front-end
+
+'던전앤파이터' 게임의 아바타 자동 생성 애플리케이션
 
 ## 기능
 
