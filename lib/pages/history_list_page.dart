@@ -33,7 +33,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   Future fetchHistory() async {
     final response =
-        await http.get(Uri.parse('${history_check_url}/test4@naver.com'));
+        await http.get(Uri.parse('${history_check_url}/$useremail'));
     print('저장 내역 statusCode : ${response.statusCode}');
 
     if (response.statusCode == 200) {
@@ -126,8 +126,52 @@ class _HistoryPageState extends State<HistoryPage> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text('${history[index]['title']}'),
+                                    InkWell(
+                                      onTap: () async {
+                                        final response = await http.delete(
+                                            Uri.parse(
+                                                '${avatar_save_url}/$useremail'));
+                                        print(
+                                            '저장 내역 statusCode: ${response.statusCode}');
+
+                                        if (response.statusCode == 200) {
+                                        } else {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: Text(
+                                                  '오류',
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                content: Text(
+                                                  '삭제하는 중 오류가 발생했습니다.',
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.pop(context),
+                                                    child: Text('확인'),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        }
+                                        setState(() {
+                                          history = [];
+                                          fetchHistory();
+                                        }); // 화면을 다시 빌드하기 위해 setState 호출
+                                      },
+                                      child: Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                    Text('저장한 제목 : ${history[index]['title']}'),
                                     SizedBox(height: 5),
                                     Expanded(
                                       child: ListView.builder(
